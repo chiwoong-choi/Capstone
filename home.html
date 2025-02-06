@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 피트니스 코치</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 48px;
+            color: #002855; /* 짙은 남색 - 신뢰감 */
+            margin-bottom: 50px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        button {
+            padding: 12px 25px; /* 버튼의 크기를 줄임 */
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #0239A1; /* 선명한 블루 */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            width: 220px; /* 버튼의 너비도 약간 줄임 */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #0056b3; /* 더 깊은 블루 */
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>AI 피트니스 코치</h1>
+    <div class="button-container">
+        <form action="squat_guide.html" method="get">
+            <button type="submit" name="exercise" value="squat">스쿼트</button>
+        <form action="exercise.html" method="get">
+        </form>
+            <button type="submit" name="exercise" value="bench_press">벤치 프레스</button>
+        </form>
+    </div>
+</body>
+</html>
