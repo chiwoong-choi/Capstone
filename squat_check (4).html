@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스쿼트 자세 가이드</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #E5EEF4;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #FFFFFF;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+            width: 1200px;
+            position: relative;
+            padding-top: 100px;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #002855;
+            margin-top: 0;
+            margin-bottom: 18px;
+            position: absolute;
+            top: 28px;
+            left: 0;
+            right: 0;
+        }
+
+        .video-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px; /* Reduced from 50px */
+            margin-bottom: 40px;
+        }
+
+        .video-container {
+            width: 580px;
+            height: 420px;
+            background-color: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 16px;
+            font-size: 22px;
+            cursor: pointer;
+            background-color: #0239A1;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 180px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+    </style>
+    <script>
+        function navigateToPage(page) {
+            window.location.href = page;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>이 자세로 진행하시겠습니까?</h1>
+        <div class="video-wrapper">
+            <div class="video-container">
+                <video id="video1" autoplay>
+                    <img src="/video_feed1" alt="Video Stream 1">
+                </video>
+            </div>
+            <div class="video-container">
+                <video id="video2" autoplay>
+                    <img src="/video_feed2" alt="Video Stream 2">
+                </video>
+            </div>
+        </div>
+        <div class="button-container">
+            <button id="noButton" onclick="navigateToPage('squat_guide (3).html')">NO</button>
+            <button id="yesButton" onclick="navigateToPage('setting (5).html')">YES</button>
+        </div>
+    </div>
+</body>
+</html>

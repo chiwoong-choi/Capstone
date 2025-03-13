@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운동 설정</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #E5EEF4;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #FFFFFF;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+            width: 900px;
+            position: relative;
+            padding-top: 100px;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #002855;
+            margin-top: 0;
+            margin-bottom: 18px;
+            position: absolute;
+            top: 28px;
+            left: 0;
+            right: 0;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 60px;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            font-size: 32px;
+            color: #002855;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100px;
+            padding: 10px;
+            font-size: 30px;
+            text-align: center;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            outline: none;
+        }
+
+
+        button.small {
+            padding: 8px;
+            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            background-color: #0239A1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        button.small:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 10px;
+            right: 30px; 
+            margin-top: 40px; 
+        }
+
+        button.large {
+            padding: 12px;
+            font-size: 24px;
+            width: 140px;
+            height: 50px;
+            cursor: pointer;
+            background-color: #0239A1;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        button.large:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>운동 설정</h1>
+        <div class="input-container">
+            <div class="input-group">
+                <label for="sets">세트 수:</label>
+                <button class="small" onclick="changeValue('sets', -1)">-</button>
+                <input type="number" id="sets" min="1" max="10" value="3" readonly>
+                <button class="small" onclick="changeValue('sets', 1)">+</button>
+            </div>
+            <div class="input-group">
+                <label for="reps">반복 횟수:</label>
+                <button class="small" onclick="changeValue('reps', -1)">-</button>
+                <input type="number" id="reps" min="1" max="50" value="10" readonly>
+                <button class="small" onclick="changeValue('reps', 1)">+</button>
+            </div>
+        </div>
+        <div class="button-container">
+            <button id="confirmButton" class="large" onclick="saveSettings()">확인</button>
+        </div>
+    </div>
+
+    <script>
+        function changeValue(inputId, delta) {
+            const input = document.getElementById(inputId);
+            let newValue = parseInt(input.value) + delta;
+            if (inputId === 'sets') {
+                newValue = Math.max(1, Math.min(10, newValue));
+            } else if (inputId === 'reps') {
+                newValue = Math.max(1, Math.min(50, newValue));
+            }
+            input.value = newValue;
+        }
+
+        function saveSettings() {
+            const sets = document.getElementById('sets').value;
+            const reps = document.getElementById('reps').value;
+            localStorage.setItem('sets', sets);
+            localStorage.setItem('reps', reps);
+            window.location.href = 'squat_start (6).html';
+        }
+    </script>
+</body>
+</html>
