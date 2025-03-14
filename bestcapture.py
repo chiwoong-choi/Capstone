@@ -323,7 +323,7 @@ def show_result(unique_st_failed_front_frame_num, unique_ht_failed_front_frame_n
         if cv2.waitKey(delay) & 0xFF == ord('q'):
             break
 
-def silhouette():
+#def silhouette():
     
 
 # 실행 코드
