@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스쿼트 자세 가이드</title>
+    <title>스쿼트 자세 체크</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,13 +40,13 @@
         .video-wrapper {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 30px; /* Reduced from 50px */
+            gap: 10px;
+            margin-top: 30px;
             margin-bottom: 40px;
         }
 
         .video-container {
-            width: 580px;
+            width: 310px;
             height: 420px;
             background-color: #000;
             border-radius: 15px;
@@ -58,6 +58,55 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .text-container {
+            width: 540px;
+            height: 420px;
+            background-color: #F2F2F2;
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
+            color: #333;
+            line-height: 1.6;
+            font-weight: bold; 
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+            font-size: 28px; 
+            gap: 15px; 
+            text-align: center;
+        }
+
+        .checklist div {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 8px; 
+        }
+
+        .checklist .fulfilled {
+            color: #28a745;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist .not-fulfilled {
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist .icon {
+            margin-left: 10px;
         }
 
         .button-container {
@@ -83,11 +132,74 @@
             background-color: #0056b3;
             transform: scale(1.05);
         }
+
+        .bottom-text {
+            position: absolute;
+            bottom: 65px;
+            left: 50%;
+            font-weight:bold;
+            transform: translateX(-50%); 
+            font-size: 24px;
+            text-align: center;
+            z-index: 1000;
+        }
     </style>
     <script>
-        function navigateToPage(page) {
-            window.location.href = page;
+        function navigateToPage(url) {
+            window.location.href = url;
         }
+
+        let checklistState = {
+            knee: 'not-fulfilled',
+            hip: 'not-fulfilled',
+            shoulder: 'not-fulfilled',
+            fullSquat: 'not-fulfilled'
+        };
+
+        function toggleState(item) {
+            if (checklistState[item] === 'not-fulfilled') {
+                checklistState[item] = 'fulfilled';
+            } else {
+                checklistState[item] = 'not-fulfilled';
+            }
+            updateChecklist();
+        }
+
+        function updateChecklist() {
+            updateItemState('knee', checklistState.knee);
+            updateItemState('hip', checklistState.hip);
+            updateItemState('shoulder', checklistState.shoulder);
+            updateItemState('fullSquat', checklistState.fullSquat);
+        }
+
+        function updateItemState(item, state) {
+            const itemElement = document.getElementById(item);
+            const icon = itemElement.querySelector('.icon');
+
+            if (state === 'fulfilled') {
+                itemElement.classList.remove('not-fulfilled');
+                itemElement.classList.add('fulfilled');
+                icon.textContent = '✔️';
+            } else {
+                itemElement.classList.remove('fulfilled');
+                itemElement.classList.add('not-fulfilled');
+                icon.textContent = '❌';
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '1') {
+                toggleState('knee');
+            } else if (event.key === '2') {
+                toggleState('hip');
+            } else if (event.key === '3') {
+                toggleState('shoulder');
+            } else if (event.key === '4') {
+                toggleState('fullSquat');
+            }
+        });
+        
+        window.onload = updateChecklist;
     </script>
 </head>
 <body>
@@ -95,16 +207,37 @@
         <h1>이 자세로 진행하시겠습니까?</h1>
         <div class="video-wrapper">
             <div class="video-container">
-                <video id="video1" autoplay>
-                    <img src="/video_feed1" alt="Video Stream 1">
+                <video id="video1" autoplay controls>
+                    <source src="sample.mp4" type="video/mp4">
                 </video>
             </div>
             <div class="video-container">
-                <video id="video2" autoplay>
-                    <img src="/video_feed2" alt="Video Stream 2">
+                <video id="video2" autoplay controls>
+                    <source src="sample.mp4" type="video/mp4">
                 </video>
             </div>
+            <div class="text-container">
+                <div class="checklist">
+                    <div id="knee">
+                        <span>무릎:</span>
+                        <span class="icon">❌</span>
+                    </div>
+                    <div id="hip">
+                        <span>골반:</span>
+                        <span class="icon">❌</span>
+                    </div>
+                    <div id="shoulder">
+                        <span>어깨:</span>
+                        <span class="icon">❌</span>
+                    </div>
+                    <div id="fullSquat">
+                        <span>풀스쿼트:</span>
+                        <span class="icon">❌</span>
+                    </div>
+                </div>
+            </div>
         </div>
+        <div class="bottom-text">⚠️ 2개 이상 틀렸을 시 NO를 누르기를 권장합니다.</div>
         <div class="button-container">
             <button id="noButton" onclick="navigateToPage('squat_guide (3).html')">NO</button>
             <button id="yesButton" onclick="navigateToPage('setting (5).html')">YES</button>
