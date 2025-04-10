@@ -10,7 +10,7 @@ import threading
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(
     static_image_mode=False,
-    model_complexity=1,
+    model_complexity=0,
     smooth_landmarks=True,
     min_detection_confidence=0.3,
     min_tracking_confidence=0.3
@@ -18,10 +18,10 @@ pose = mp_pose.Pose(
 
 class CameraThread:
     def __init__(self, camera_id):
-        self.cap = cv2.VideoCapture(camera_id, cv2.CAP_DSHOW)
+        self.cap = cv2.VideoCapture(camera_id)
         if not self.cap.isOpened():
             raise ValueError(f"카메라 {camera_id}를 열 수 없습니다. 연결 상태를 확인하세요.")
-        
+        self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.cap.set(cv2.CAP_PROP_FPS, 30)
@@ -565,7 +565,7 @@ def realtime_synchronize(data_dict, front_camera_thread, right_camera_thread):
 if __name__ == "__main__":
     clear_folders(front_save_image_dir, right_save_image_dir, front_silhouette_dir, right_silhouette_dir)
     front_camera = CameraThread(0)
-    right_camera = CameraThread(1)
+    right_camera = CameraThread(2)
 
     try:
         print("🔵 [INFO] 프로그램 시작")
