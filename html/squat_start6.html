@@ -61,6 +61,18 @@
             position: relative;
         }
 
+        .overlay-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 1;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
         img {
             width: 100%;
             height: 100%;
@@ -175,12 +187,12 @@
     </div>
 
     <div class="video-container">
+        <img src="/path/to/overlay.png" id="front_overlay" class="overlay-image" alt="Overlay">
         <img src="/video_feed1" id="video1" alt="Front Camera Stream" width="640" height="480">
-
     </div>
     <div class="video-container">
-        <img src="/video_feed2" id="video1" alt="Front Camera Stream" width="640" height="480">
-
+        <img src="/path/to/overlay.png" id="side_overlay" class="overlay-image" alt="Overlay">
+        <img src="/video_feed2" id="video2" alt="Side Camera Stream" width="640" height="480">
     </div>
     
 
@@ -214,6 +226,28 @@
             const initialCountdownElement = document.getElementById("initialCountdown");
             const countdownBox = document.getElementById("countdownBox");
 
+            const frontOverlay = document.getElementById("front_overlay");
+            const sideOverlay = document.getElementById("side_overlay");
+            let currentImageIndex = 1; // 현재 이미지 인덱스
+
+            function padNumber(num) {
+                // 0001.png, 0002.png 등
+                return num.toString().padStart(4, '0');
+            }
+
+            function updateOverlayImages() {
+                const imageNumber = padNumber(currentImageIndex);
+                const imagePath = `/Work/front_silhouette/${imageNumber}.png`; // 이미지 경로
+                
+                frontOverlay.src = imagePath;
+                sideOverlay.src = imagePath;
+
+                currentImageIndex = currentImageIndex % 1000 + 1;
+            }
+            
+            const interval = 50; // 0.05초 마다 이미지 업데이트
+            const overlayInterval = setInterval(updateOverlayImages, interval);
+
             function startInitialCountdown() {
                 const timer = setInterval(() => {
                     initialCountdown--;
@@ -223,7 +257,7 @@
                         (timer);
                         initialCountdownElement.style.display = 'none';
                         console.log("카운트다운 종료, 분석 시작합니다.");
-                        startSquatAnalysis();  // 이 함수는 아래에서 정의해줍니다
+                        startSquatAnalysis(); // 이 함수는 아래에서 정의해줍니다
                     }
                 }, 1000);
             }
@@ -268,13 +302,14 @@
             document.getElementById("endButton").addEventListener("click", endExercise);
 
             function endExercise() {
+                clearInterval(overlayInterval);
                 let video1 = document.getElementById("video1");
                 let video2 = document.getElementById("video2");
                 video1.pause();
                 video2.pause();
                 video1.src = "";
                 video2.src = "";
-                window.location.href = "http://localhost:5000/squat_end7.html"; // Updated to localhost:5000
+                window.location.href = "http://localhost:5000/squat_end7.html";
             }
 
             function showNotification(message) {
