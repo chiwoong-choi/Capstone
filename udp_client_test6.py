@@ -704,6 +704,7 @@ def squat_guide3():
 
 pose_analyse_complete = False
 silhouette_creation_complete = False
+
 def process_squat_analysis(front_camera, right_camera):
     """
     백그라운드에서 스쿼트 분석 작업을 처리하는 함수.
@@ -741,15 +742,12 @@ def loading():
 def squat_check4():
     return render_template('squat_check4.html')
 
-
-
-
 @app.route('/setting5', methods=['GET', 'POST'])
 def setting5():
     if request.method == 'POST':
-        sets = request.form.get('sets')
-        reps = request.form.get('reps')
-        return redirect(url_for('squat_start6', sets=sets, reps=reps))
+        print("POST 요청 수신. squat_start6로 리다이렉트합니다.")
+        return redirect(url_for('squat_start6'))
+    print("GET 요청 수신. setting5.html 렌더링합니다.")
     return render_template('setting5.html')
 
 @app.route('/squat_start6', methods=['GET', 'POST'])
@@ -757,7 +755,9 @@ def squat_start6():
     if request.method == 'POST':
         sets = request.form.get('sets', 3)
         reps = request.form.get('reps', 10)
-    return render_template('squat_start6.html', sets=sets, reps=reps)
+        return render_template('squat_start6.html', sets=sets, reps=reps)
+    else:
+        return redirect(url_for('setting5'))
 
 @app.route('/squat_end7')
 def squat_end7():
