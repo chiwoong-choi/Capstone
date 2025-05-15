@@ -208,19 +208,21 @@
         <h1>이 자세로 진행하시겠습니까?</h1>
         <div class="video-wrapper">
             <div class="video-container">
-                <video autoplay loop controls muted>
-                    <source src="{{ url_for('static', filename='videos/front_result_fixed.mp4') }}" type="video/mp4">
+                <video autoplay muted loop controls>
+                    <source src="{{ url_for('static', filename='front_result.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>    
+        </div>
+        <div class="video-container">
+                <video autoplay muted loop controls>
+                    <source src="{{ url_for('static', filename='right_result.mp4') }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
-            <div class="video-container">
-                <video autoplay loop controls muted>
-                    <source src="{{ url_for('static', filename='videos/right_result_fixed.mp4') }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        </div> <!-- .video-wrapper 닫기 -->
-    
+        </div>
+        
+        <div class="bottom-text">⚠️ 2개 이상 틀렸을 시 NO를 누르기를 권장합니다.</div>
         <div class="button-container">
             <button id="noButton">NO</button>
             <button id="yesButton">YES</button>
