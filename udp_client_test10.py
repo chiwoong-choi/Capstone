@@ -868,24 +868,21 @@ def loading():
 @app.route('/squat_check4')
 def squat_check4():
     return render_template('squat_check4.html')
-
+    
 @app.route('/setting5', methods=['GET', 'POST'])
 def setting5():
     if request.method == 'POST':
-        sets = request.form.get('sets')
-        reps = request.form.get('reps')
+        print("POST 요청 수신. squat_start6로 리다이렉트합니다.")
         return redirect(url_for('squat_start6'))
+    print("GET 요청 수신. setting5.html 렌더링합니다.")
     return render_template('setting5.html')
 
-@app.route('/squat_start6', methods=['GET', 'POST'])
+@app.route('/squat_start6')
 def squat_start6():
-    if request.method == 'POST':
-        sets = request.form.get('sets', 3)
-        reps = request.form.get('reps', 10)
-        return render_template('squat_start6.html', sets=sets, reps=reps)
-    else:
-        return render_template('setting5.html')
- 
+    sets = request.args.get('sets', 3)
+    reps = request.args.get('reps', 10)
+    return render_template('squat_start6.html', sets=sets, reps=reps)
+
 @app.route('/squat_end7')
 def squat_end7():
     accuracy = round(random.uniform(80, 100), 2)  # 무작위 정확도 생성
