@@ -7,7 +7,7 @@ import time
 # UDP 소켓 설정
 FRONT_CAMERA_PORT = 5005  # 전면 카메라 포트
 RIGHT_CAMERA_PORT = 5006  # 측면 카메라 포트
-TCP_IP = "223.194.136.87"  # 노트북 IP 주소
+TCP_IP = "223.194.129.240"  # 노트북 IP 주소
 
 # 두 개의 소켓 생성
 front_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
