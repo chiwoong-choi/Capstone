@@ -52,7 +52,8 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
+    time.sleep(0.01)  # 10ms 딜레이 추가
+    
 front_camera.release()
 right_camera.release()
 front_socket.close()
