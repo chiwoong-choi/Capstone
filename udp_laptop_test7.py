@@ -2,7 +2,7 @@ import cv2
 import socket
 import struct
 import time
-
+import numpy as np 
 # TCP 연결 설정
 FRONT_CAMERA_PORT = 5005
 RIGHT_CAMERA_PORT = 5006
@@ -39,17 +39,27 @@ def send_frame(sock, frame, timestamp):
 
 try:
     while True:
+        # 전면 카메라
         ret_front, frame_front = front_camera.read()
         if ret_front:
             ts_front = get_counter_timestamp(front_frame_counter)
             send_frame(front_socket, frame_front, ts_front)
-            front_frame_counter += 1  # 프레임을 읽었을 때만 카운터 증가
+        else:
+            dummy = np.zeros((480, 640, 3), dtype=np.uint8)
+            ts_front = get_counter_timestamp(front_frame_counter)
+            send_frame(front_socket, dummy, ts_front)
+        front_frame_counter += 1
 
+        # 측면 카메라 (right)도 동일하게 처리
         ret_right, frame_right = right_camera.read()
         if ret_right:
             ts_right = get_counter_timestamp(right_frame_counter)
             send_frame(right_socket, frame_right, ts_right)
-            right_frame_counter += 1  # 프레임을 읽었을 때만 카운터 증가
+        else:
+            dummy = np.zeros((480, 640, 3), dtype=np.uint8)
+            ts_right = get_counter_timestamp(right_frame_counter)
+            send_frame(right_socket, dummy, ts_right)
+        right_frame_counter += 1
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
