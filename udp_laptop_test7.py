@@ -5,7 +5,7 @@ import time
 
 FRONT_CAMERA_PORT = 5005
 RIGHT_CAMERA_PORT = 5006
-TCP_IP = "223.194.136.87"
+TCP_IP = "192.168.111.60"
 
 front_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 right_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,16 +20,23 @@ if not front_camera.isOpened() or not right_camera.isOpened():
     print("⚠️ [ERROR] 카메라를 열 수 없습니다.")
     exit()
 
-def get_monotonic_timestamp():
-    return int(time.monotonic() * 1e6)  # 마이크로초 단위
+last_timestamp = 0
 
-def send_frame(socket, frame):
+def get_monotonic_timestamp():
+    global last_timestamp
+    new_ts = int(time.monotonic() * 1e6)
+    if new_ts <= last_timestamp:
+        new_ts = last_timestamp + 1
+    last_timestamp = new_ts
+    return new_ts
+
+def send_frame(sock, frame):
     _, buffer = cv2.imencode('.jpg', frame)
     data = buffer.tobytes()
     size = len(data)
     timestamp = get_monotonic_timestamp()
     header = struct.pack("QI", timestamp, size)
-    socket.sendall(header + data)
+    sock.sendall(header + data)
 
 while True:
     ret_front, frame_front = front_camera.read()
