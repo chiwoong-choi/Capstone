@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로딩 중...</title>
     <style>
         body {
@@ -18,7 +16,8 @@
 
         .container {
             background-color: #FFFFFF;
-            padding: 45px 70px;
+            width: 400px;
+            padding: 25px 70px;
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
@@ -27,32 +26,65 @@
         h1 {
             font-size: 50px;
             color: #002855;
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin: 10px 0 40px 0;
         }
 
         .spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #0239A1;
+            border: 12px solid #f3f3f3;
+            border-top: 12px solid #0239A1;
             border-radius: 50%;
-            width: 65px;
-            height: 65px;
+            width: 75px;
+            height: 75px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        #statusText {
+            font-size: 28px;
+            color: #002855;
+            margin: 40px 0 20px 0;
+            height: 30px;
+            font-weidth: bold;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>로딩 중...</h1>
+        <h1>Loading...</h1>
         <div class="spinner"></div>
+        <div id="statusText"></div>
     </div>
+
+    <script>
+        const messages = [
+            "잠시만 기다려주세요.",
+            "실루엣을 추출하고 있습니다.",
+            "골반 틀어짐을 감지하고 있습니다.",
+            "어깨 기울기를 측정하고 있습니다.",
+            "무릎 각도를 측정하고 있습니다."
+        ];
+
+        let index = 0;
+        const statusText = document.getElementById('statusText');
+
+        function updateMessage() {
+            if (index < messages.length) {
+                statusText.textContent = messages[index];
+                index++;
+                setTimeout(updateMessage, 5000); // 5초마다 다음 메시지 표시
+            }      
+        }
+        window.onload = function() {
+            setTimeout(updateMessage, 0); 
+        }
+
+    </script>
 
 </body>
 </html>
