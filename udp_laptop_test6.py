@@ -44,12 +44,14 @@ while True:
     ret_front, frame_front = front_camera.read()
     if ret_front:
         front_frame_counter = send_frame(front_socket, frame_front, front_frame_counter)
-
+    else:
+        front_frame_counter += 1
     # 측면 카메라 프레임 읽기
     ret_side, frame_side = right_camera.read()
     if ret_side:
         right_frame_counter = send_frame(right_socket, frame_side, right_frame_counter)
-
+    else:
+        right_frame_counter += 1
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     time.sleep(0.01)  # 10ms 딜레이 추가
