@@ -9,7 +9,7 @@ import cv2
 import os
 import time
 import csv
-import numpy as np  
+import numpy as np
 from flask import Flask, render_template, send_from_directory, Response, request, redirect, url_for, abort
 from threading import Thread, Lock
 import mediapipe as mp
@@ -69,10 +69,7 @@ right_result_output_video_path = "right_result.mp4"
 knee_angle_history = []
 streaming_flags = {0: False, 1: False}
 shared_silhouette_idx = None  # ✅ front → right 로 전달될 실루엣 인덱스
-last_squat_time = 0
-ANGLE_CHANGE_THRESHOLD = 5
-direction = "up"
-squat_started = False
+
 # ------------------- 포즈 분석 함수 -------------------
 
 #시연용 폴더 삭제 함수
@@ -555,7 +552,6 @@ def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, rep
     print("🔵 [INFO] 실루엣 동기화 시작")
 
     global squat_count, not_deep_squat, shared_silhouette_idx
-    squat_count = 0
     silhouette_angle_list = np.array([value[2] for value in data_dict.values()])
     silhouette_keys = list(data_dict.keys())
 
@@ -608,16 +604,13 @@ def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, rep
                 ankle = (landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].x * width, landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].y * height)
                 knee_angle = calculate_angle_knee(hip, knee, ankle)
 
-                if previous_knee_angle is None or abs(knee_angle - previous_knee_angle) > ANGLE_CHANGE_THRESHOLD:
-                    idx = np.argmin(np.abs(silhouette_angle_list - knee_angle))
-                    silhouette_idx = os.path.splitext(silhouette_keys[idx])[0]
+                # ✅ 실루엣 인덱스를 "항상" 현재 knee_angle에 가장 가까운 것으로 선택!
+                idx = np.argmin(np.abs(silhouette_angle_list - knee_angle))
+                silhouette_idx = os.path.splitext(silhouette_keys[idx])[0]
 
-                    previous_knee_angle = knee_angle
-                    previous_silhouette_idx = silhouette_idx
-                    shared_silhouette_idx = silhouette_idx
-                else:
-                    silhouette_idx = previous_silhouette_idx
-                
+                previous_knee_angle = knee_angle
+                previous_silhouette_idx = silhouette_idx
+                shared_silhouette_idx = silhouette_idx
                 silhouette = front_silhouette_cache.get(silhouette_idx, {})
                 overlay = draw_silhouette_overlay(front_frame, silhouette, body_parts, colors, results)
 
@@ -644,14 +637,12 @@ def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, rep
 
             # 종료 조건
             if squat_count >= reps:
-                
                 total = squat_count + not_deep_squat
                 accuracy = squat_count / total * 100 if total > 0 else 0
                 print(f"✅ [INFO] 세트 완료 - 정확도: {accuracy:.1f}%")
                 squat_count = 0
                 not_deep_squat = 0
-                time.sleep(3) # 3초 대기 후 breaktime.html로 이동
-                break
+                continue
 
             # 결과 송출
             frame = processed_front if camera_type == "front" else processed_right
@@ -691,26 +682,22 @@ def draw_silhouette_overlay(frame, silhouette, body_parts, colors, results):
     return overlay
 
 def update_squat_count(knee_angle):
-    global squat_count, is_squatting, warned_low_depth, not_deep_squat, direction , squat_started
-    squat_down_threshold = 100  # 내려갔다고 판단하는 각도
-    squat_up_threshold = 160    # 완전히 올라왔다고 판단하는 각도
-    deep_squat_limit = 95       # 충분히 깊게 내려갔는지 판단
-    
-    if direction == "up" and knee_angle < squat_down_threshold:
-        direction = "down"
-        squat_started = True
-        # print("⬇️ 내려감 감지")
-
-    elif direction == "down" and knee_angle > squat_up_threshold:
-        direction = "up"
-        if squat_started:
-            if knee_angle < deep_squat_limit:
-                not_deep_squat += 1
-                print("⚠️ 깊지 않은 스쿼트")
-            else:
-                squat_count += 1
-                print(f"✅ 스쿼트 카운트: {squat_count}")
-            squat_started = False  # 다음 사이클로 리셋
+    global squat_count, is_squatting, warned_low_depth, not_deep_squat
+    if knee_angle > 120:
+        if is_squatting:
+            squat_count += 1
+            print(f"✅ [INFO] 스쿼트 카운트: {squat_count}")
+            squat_count_status["count"] = squat_count
+            is_squatting = False
+            warned_low_depth = False
+    elif knee_angle < 100:
+        is_squatting = True
+        warned_low_depth = False
+    else:
+        if not warned_low_depth:
+            print("⚠️ [WARNING] 스쿼트 깊이가 부족합니다!")
+            warned_low_depth = True
+            not_deep_squat += 1
 
 # ------------------- Flask 앱 초기화 -------------------
 
@@ -825,11 +812,9 @@ def setting5():
 
 @app.route('/squat_start6', methods=['GET', 'POST'])
 def squat_start6():
-        global squat_count       
-        squat_count = 0
-        current_set = session.get('current_set', 1)
         sets = session.get('sets', 3)
         reps = session.get('reps', 10)
+        current_set = session.get('current_set', 1)
         return render_template('squat_start6.html', sets=sets, reps=reps, current_set=current_set)
     
  
@@ -891,21 +876,13 @@ def update_set():
 
 @app.route('/breaktime')
 def breaktime():
-    global squat_count
-    squat_count = 0
     current_set = session.get('current_set', 1)
     sets = session.get('sets', 3)
     # JS에서 30초 후 squat_start6로 자동 이동
-    current_set += 1
-    session["current_set"] = current_set
-    if current_set > sets:
-        return redirect(url_for('squat_end7'))
-    return render_template('rest.html', current_set=current_set, sets=sets)
+    return render_template('breaktime.html', current_set=current_set, sets=sets)
 
 @app.route('/squat_count_status')
 def squat_count_status_api():
-    squat_count_status["set"] = session.get('current_set', 1)
-    squat_count_status["sets"] = session.get('sets', 3)
     return jsonify(squat_count_status)
 
 if __name__ == '__main__':
