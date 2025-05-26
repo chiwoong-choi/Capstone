@@ -555,7 +555,7 @@ def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, rep
     print("🔵 [INFO] 실루엣 동기화 시작")
 
     global squat_count, not_deep_squat, shared_silhouette_idx
-    squat_count = 0
+    #squat_count = 0
     silhouette_angle_list = np.array([value[2] for value in data_dict.values()])
     silhouette_keys = list(data_dict.keys())
 
@@ -648,7 +648,7 @@ def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, rep
                 total = squat_count + not_deep_squat
                 accuracy = squat_count / total * 100 if total > 0 else 0
                 print(f"✅ [INFO] 세트 완료 - 정확도: {accuracy:.1f}%")
-                squat_count = 0
+                #squat_count = 0
                 not_deep_squat = 0
                 time.sleep(3) # 3초 대기 후 breaktime.html로 이동
                 break
@@ -711,6 +711,7 @@ def update_squat_count(knee_angle):
                 squat_count += 1
                 print(f"✅ 스쿼트 카운트: {squat_count}")
             squat_started = False  # 다음 사이클로 리셋
+    squat_count_status["count"] = squat_count
 
 # ------------------- Flask 앱 초기화 -------------------
 
