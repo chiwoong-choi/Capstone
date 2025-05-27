@@ -1,0 +1,11 @@
+<h1>휴식 시간입니다!</h1>
+<p>{{ current_set-1 }}세트 완료 / 총 {{ sets }}세트</p>
+<p id="timer">30</p>
+<script>
+let t = 30;
+setInterval(function() {
+    t--;
+    document.getElementById('timer').textContent = t;
+    if (t <= 0) window.location.href = "/squat_start6";
+}, 1000);
+</script>

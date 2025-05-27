@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>휴식 타이머</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: #E5EEF4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      width: 500px;
+    }
+
+    .set-info {
+      font-size: 55px;
+      color: #002855;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: 40px;
+      color: #002855;
+      margin-bottom: 30px;
+    }
+
+    .circle-timer {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+    }
+
+    svg {
+      transform: rotate(-90deg);
+    }
+
+    circle {
+      fill: none;
+      stroke-width: 12;
+    }
+
+    .bg {
+      stroke: #ddd;
+    }
+
+    .progress {
+      stroke: #0239A1;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s linear;
+    }
+
+    .time-text {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 80px;
+      font-weight: bold;
+      color: #0239A1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="set-info"> {{ current_set-1 }}세트 완료! </div>
+    <h1>휴식 시간입니다</h1>
+    <div class="circle-timer">
+      <svg width="200" height="200">
+        <circle class="bg" cx="100" cy="100" r="90" />
+        <circle class="progress" cx="100" cy="100" r="90" />
+      </svg>
+      <div class="time-text" id="timer">30</div>
+    </div>
+  </div>
+
+  <script>
+    const FULL_DASH = 2 * Math.PI * 90; // 2πr
+    const progressCircle = document.querySelector('.progress');
+    const timerText = document.getElementById('timer');
+    let time = 10;
+
+    progressCircle.style.strokeDasharray = FULL_DASH;
+    progressCircle.style.strokeDashoffset = 0;
+
+    const interval = setInterval(() => {
+      time--;
+      timerText.textContent = time;
+
+      const offset = FULL_DASH * (1 - time / 10);
+      progressCircle.style.strokeDashoffset = offset;
+
+      if (time <= 0) {
+        clearInterval(interval);
+        window.location.href = "/squat_start6?from_break=1";
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

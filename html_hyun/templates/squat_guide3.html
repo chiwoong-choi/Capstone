@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스쿼트 자세 가이드</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #002855;
+            position: absolute;
+            top: 6%;
+            transform: translateY(-50%);
+            margin: 0;
+        }
+
+        .video-wrapper {
+            display: flex;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .video-container {
+            width: 680px;
+            height: 500px;
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bottom-text {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            font-weight: bold;
+            transform: translateX(-50%); 
+            font-size: 24px;
+            color: rgba(230, 57, 70, 0.9);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .initial-countdown {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .initial-countdown p {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .initial-countdown .countdown-box {
+            width: 200px;
+            height: 200px;
+            background-color: #0239A1;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .replay-container {
+            display: none;
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            width: 500px;
+            padding: 50px; 
+            background-color: #E5EEF4;
+            color: #002855; 
+            font-size: 38px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3); 
+            z-index: 1000;
+            transform: translate(-50%, -50%); 
+        }
+    </style>
+</head>
+<body>
+    <!-- 초기 10초 카운트다운 -->
+    <div class="initial-countdown" id="initialCountdown">
+        <p>10초 후 시작됩니다.</p>
+        <div class="countdown-box" id="countdownBox">10</div>
+    </div>
+
+    <h1>올바른 스쿼트 자세를 취해주세요.</h1>
+    
+    <div class="video-wrapper">
+        <div class="video-container">
+                <img src="/video_feed/front" alt="Front Camera Stream",width="640" height="480">
+        </div>
+        <div class="video-container">
+                <img src="/video_feed/right" alt="Right Camera Stream",width="640" height="480">  
+        </div>
+    </div>
+
+    <div class="bottom-text">자세가 올바르면 다음으로 넘어갑니다</div>
+
+    <div id="replay-Box" class="replay-container">
+        자세를 다시 수행하세요!
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let initialCountdown = 2; // 나중에 10초로 변경
+            const initialCountdownElement = document.getElementById("initialCountdown");
+            const countdownBox = document.getElementById("countdownBox");
+            const replayBox = document.getElementById("replay-Box");
+    
+            function startInitialCountdown() {
+                const timer = setInterval(() => {
+                    initialCountdown--;
+                    countdownBox.textContent = initialCountdown;
+    
+                    if (initialCountdown <= 0) {
+                        clearInterval(timer);
+                        initialCountdownElement.style.display = 'none';
+    
+                        // 5초 후 다음 페이지로 이동
+                        setTimeout(() => {
+                            window.location.href = "/loading";
+                        }, 7000);
+                    }
+                }, 1000);
+            }
+    
+            function showReplayBox() {
+                replayBox.style.display = 'block';
+                setTimeout(() => {
+                    replayBox.style.display = 'none';
+                }, 3000); 
+            }
+    
+            startInitialCountdown();
+        });
+    </script>
+</body>
+</html>

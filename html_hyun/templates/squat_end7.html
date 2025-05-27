@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>운동 결과 화면</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #002855;
+            margin-bottom: 50px;
+        }
+
+        .accuracy-box {
+            background-color: #0239A1;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .feedback-box {
+            background-color: #E5EEF4;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .exit-btn {
+            background-color: #e0e0e0;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+        }
+
+        .exit-btn:hover {
+            background-color: #bdbdbd;
+        }
+    </style>
+</head>
+<body>
+    <h1>스쿼트 완료</h1>
+    <div class="accuracy-box">
+        <p>평균 정확도: {{ accuracy }}%</p>
+    </div>
+    <div class="feedback-box">
+        <p>{{ feedback }}</p>
+    </div>
+
+    <button class="exit-btn" onclick="location.href='index.html'">나가기</button>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로딩 중...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #E5EEF4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            background-color: #FFFFFF;
+            padding: 45px 70px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 50px;
+            color: #002855;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #0239A1;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkStatus = () => {
+                fetch('/silhouette_status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.complete) {
+                            window.location.href = "/squat_check4"; // 연산 완료 시 squat_check4로 이동
+                        } else {
+                            setTimeout(checkStatus, 1000); // 1초 후 다시 확인
+                        }
+                    });
+            };
+            checkStatus();
+        });
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>로딩 중...</h1>
+        <div class="spinner"></div>
+    </div>
+
+</body>
+</html>
