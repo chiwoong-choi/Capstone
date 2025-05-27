@@ -146,6 +146,14 @@
             text-align: center;
             z-index: 1000;
         }
+
+        .accuracy-info {
+            margin: 12px 0 0 0;
+            font-size: 1.15em;
+            color: #0239A1;
+            font-weight: bold;
+            text-align: center;
+        }
     </style>
     <script>
         function navigateToPage(url) {
@@ -223,8 +231,10 @@
             </div>
         </div>
 
-        <div class="below-video-text">
-            <p>여기에 안내/설명/입력 등 원하는 내용을 넣으세요.</p>
+        <div class="accuracy-info">
+            <span>어깨 정확도: {{ st_accuracy|round(1) }}%</span> &nbsp;|&nbsp;
+            <span>골반 정확도: {{ ht_accuracy|round(1) }}%</span> &nbsp;|&nbsp;
+            <span>무릎 정확도: {{ kd_accuracy|round(1) }}%</span>
         </div>
         
         <div class="bottom-text">⚠️ 2개 이상 틀렸을 시 NO를 누르기를 권장합니다.</div>
