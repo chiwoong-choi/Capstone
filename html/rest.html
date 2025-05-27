@@ -82,7 +82,7 @@
         <circle class="bg" cx="100" cy="100" r="90" />
         <circle class="progress" cx="100" cy="100" r="90" />
       </svg>
-      <div class="time-text" id="timer">30</div>
+      <div class="time-text" id="timer">15</div>
     </div>
   </div>
 
@@ -90,7 +90,7 @@
     const FULL_DASH = 2 * Math.PI * 90; // 2πr
     const progressCircle = document.querySelector('.progress');
     const timerText = document.getElementById('timer');
-    let time = 30;
+    let time = 15;
 
     progressCircle.style.strokeDasharray = FULL_DASH;
     progressCircle.style.strokeDashoffset = 0;
@@ -99,7 +99,7 @@
       time--;
       timerText.textContent = time;
 
-      const offset = FULL_DASH * (1 - time / 30);
+      const offset = FULL_DASH * (1 - time / 15);
       progressCircle.style.strokeDashoffset = offset;
 
       if (time <= 0) {
