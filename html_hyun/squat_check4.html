@@ -1,0 +1,264 @@
+<!DOCTYPE html> 
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스쿼트 자세 체크</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #E5EEF4;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #FFFFFF;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+            width: 1200px;
+            position: relative;
+            padding-top: 100px;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #002855;
+            margin-top: 0;
+            margin-bottom: 18px;
+            position: absolute;
+            top: 28px;
+            left: 0;
+            right: 0;
+        }
+
+        .video-wrapper {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .video-container {
+            flex: 1 1 45%;
+            height: 480px;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+
+        .video {
+            width: 100%; /* 컨테이너의 너비에 맞춤 */
+            height: 100%; /* 컨테이너의 높이에 맞춤 */
+            object-fit: cover; /* 비디오를 컨테이너에 꽉 채우되 비율 유지 */
+        }
+
+        .text-container {
+            width: 540px;
+            height: 420px;
+            background-color: #F2F2F2;
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
+            color: #333;
+            line-height: 1.6;
+            font-weight: bold; 
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+            font-size: 28px; 
+            gap: 15px; 
+            text-align: center;
+        }
+
+        .checklist div {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 8px; 
+        }
+
+        .checklist .fulfilled {
+            color: #28a745;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist .not-fulfilled {
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist .icon {
+            margin-left: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 16px;
+            font-size: 22px;
+            cursor: pointer;
+            background-color: #0239A1;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 180px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .bottom-text {
+            position: absolute;
+            bottom: 65px;
+            left: 50%;
+            font-weight:bold;
+            transform: translateX(-50%); 
+            font-size: 24px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .accuracy-info {
+            margin: 12px 0 0 0;
+            font-size: 1.15em;
+            color: #0239A1;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function navigateToPage(url) {
+            location.assign(url); // Updated to use location.assign
+        }
+
+        let checklistState = {
+            knee: 'not-fulfilled',
+            hip: 'not-fulfilled',
+            shoulder: 'not-fulfilled',
+            fullSquat: 'not-fulfilled'
+        };
+
+        function toggleState(item) {
+            if (checklistState[item] === 'not-fulfilled') {
+                checklistState[item] = 'fulfilled';
+            } else {
+                checklistState[item] = 'not-fulfilled';
+            }
+            updateChecklist();
+        }
+
+        function updateChecklist() {
+            updateItemState('knee', checklistState.knee);
+            updateItemState('hip', checklistState.hip);
+            updateItemState('shoulder', checklistState.shoulder);
+            updateItemState('fullSquat', checklistState.fullSquat);
+        }
+
+        function updateItemState(item, state) {
+            const itemElement = document.getElementById(item);
+            const icon = itemElement.querySelector('.icon');
+
+            if (state === 'fulfilled') {
+                itemElement.classList.remove('not-fulfilled');
+                itemElement.classList.add('fulfilled');
+                icon.textContent = '✔️';
+            } else {
+                itemElement.classList.remove('fulfilled');
+                itemElement.classList.add('not-fulfilled');
+                icon.textContent = '❌';
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '1') {
+                toggleState('knee');
+            } else if (event.key === '2') {
+                toggleState('hip');
+            } else if (event.key === '3') {
+                toggleState('shoulder');
+            } else if (event.key === '4') {
+                toggleState('fullSquat');
+            }
+        });
+        
+        window.onload = updateChecklist;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>이 자세로 진행하시겠습니까?</h1>
+        <div class="video-wrapper">
+            <div class="video-container">
+                <video autoplay muted loop controls>
+                    <source src="{{ url_for('static', filename='front_result.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>    
+            <div class="video-container">
+                <video autoplay muted loop controls>
+                    <source src="{{ url_for('static', filename='right_result.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <div class="accuracy-info">
+            <span style="color:{{ 'red' if st_accuracy is not none and st_accuracy < 90 else '#0239A1' }};">
+                어깨 정확도: {{ st_accuracy|round(1) }}%
+            </span> &nbsp;|&nbsp;
+            <span style="color:{{ 'red' if ht_accuracy is not none and ht_accuracy < 90 else '#0239A1' }};">
+                골반 정확도: {{ ht_accuracy|round(1) }}%
+            </span> &nbsp;|&nbsp;
+            <span style="color:{{ 'red' if kd_accuracy is not none and kd_accuracy < 90 else '#0239A1' }};">
+                무릎 정확도: {{ kd_accuracy|round(1) }}%
+            </span>
+        </div>
+        
+        <div class="bottom-text">⚠️ 2개 이상 틀렸을 시 NO를 누르기를 권장합니다.</div>
+        <div class="button-container">
+            <button id="noButton">NO</button>
+            <button id="yesButton">YES</button>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('yesButton').addEventListener('click', function() {
+            location.href = "{{ url_for('setting5') }}";  
+        });
+
+        document.getElementById('noButton').addEventListener('click', function() {
+            location.href = "{{ url_for('squat_guide3') }}";  
+        });
+    });
+</script>
+</body>
+</html>
