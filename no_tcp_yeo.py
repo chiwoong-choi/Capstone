@@ -807,6 +807,7 @@ def process_squat_analysis(front_camera, right_camera):
         st_failed, ht_failed, kd_failed, min_angle_frame = control_squat_posture(data_dict)
         st_accuracy, ht_accuracy, kd_accuracy = show_result(st_failed, ht_failed, kd_failed, min_angle_frame)
         mean_accuracy = round((st_accuracy + ht_accuracy + kd_accuracy) / 3, 1)
+        session['mean_accuracy'] = mean_accuracy
         print("✅ [INFO] 분석 작업 완료. squat_check4.html로 이동합니다.")
         pose_analyse_complete = True
 
