@@ -827,7 +827,7 @@ def process_squat_analysis(front_camera, right_camera):
         global pose_analyse_complete
         analyse_pose()
         data_dict = mk_dictionary()
-        st_failed, ht_failed, kd_failed, min_angle_frame = control_squat_posture(data_dict)
+        st_failed, ht_failed, kd_failed, min_angle_frame, not_deep_squat = control_squat_posture(data_dict)
         show_result(st_failed, ht_failed, kd_failed, min_angle_frame, not_deep_squat)
         print("✅ [INFO] 분석 작업 완료. squat_check4.html로 이동합니다.")
         pose_analyse_complete = True
@@ -884,9 +884,32 @@ def squat_start6():
  
 @app.route('/squat_end7')
 def squat_end7():
-    accuracy = round(random.uniform(80, 100), 2)  # 무작위 정확도 생성
-    feedback = "무릎을 더 벌리세요."
+    #accuracy = round(random.uniform(80, 100), 2)  # 무작위 정확도 생성
+    #feedback = "무릎을 더 벌리세요."
+    accuracy = session.get('mean_accuracy', None)
+    if accuracy is None:
+        # 만약 세션에 값이 없으면 임시로 랜덤값 사용 (예외처리)
+        accuracy = round(random.uniform(60, 92), 1)
+
+    if accuracy >= 80:
+        feedback_list = [
+            "아주 잘하고 있어요! 어깨만 조금 더 펴보세요.",
+            "좋은 자세입니다! 무릎 방향만 조금 신경 써보세요.",
+            "거의 완벽해요! 호흡을 일정하게 해보세요.",
+            "멋진 자세예요! 시선을 정면으로 유지해보세요.",
+            "잘하고 있습니다! 엉덩이를 조금 더 뒤로 빼보세요."
+        ]
+    else:
+        feedback_list = [
+            "조금 더 집중해서 해보세요!",
+            "더 깊게 앉아보세요.",
+            "자세를 한 번 더 점검해보세요.",
+            "꾸준히 연습하면 더 좋아질 거예요.",
+            "조금 더 노력해봅시다!"
+        ]
+    feedback = random.choice(feedback_list)
     return render_template('squat_end7.html', accuracy=accuracy, feedback=feedback)
+
 
 
 @app.route('/silhouette_status')
