@@ -562,7 +562,6 @@ def cache_silhouette_npy_with_angle_and_direction(silhouette_dir, body_parts, da
 
 def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, reps=1, sets=3, current_set=1):
     print("🔵 [INFO] 실루엣 동기화 시작")
-
     global squat_count, not_deep_squat, shared_silhouette_idx
     #squat_count = 0
     silhouette_angle_list = np.array([value[2] for value in data_dict.values()])
@@ -592,6 +591,7 @@ def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, rep
     previous_knee_angle = None
     previous_silhouette_idx = None
     direction = "down"
+    frame_counter = 0  
 
     while True:
         try:
@@ -599,6 +599,10 @@ def realtime_synchronize(camera_type, data_dict, front_camera, right_camera, rep
             ret_right, right_frame = right_camera.read()
             if not ret_front or front_frame is None or not ret_right or right_frame is None:
                 time.sleep(0.01)
+                continue
+            
+            frame_counter += 1
+            if frame_counter % 2 != 0:
                 continue
 
             # FRONT 처리 및 실루엣 인덱스 결정
@@ -688,15 +692,22 @@ def draw_silhouette_overlay(frame, silhouette, body_parts, colors, results):
         part_pixels = silhouette.get(part, np.array([]))
         if part_pixels.shape[0] == 0:
             continue
+        
+        pts = part_pixels.reshape(-1, 1, 2).astype(np.int32)  # (N,1,2)
+        # 컨투어 추출 (OpenCV의 pts는 이미지 내 좌표)
+        contours, _ = cv2.findContours(pts, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
         part_centroid = np.mean(part_pixels, axis=0) if len(part_pixels) > 0 else None
         landmark_centroid = np.mean([(landmarks[i].x * width, landmarks[i].y * height) for i in indices], axis=0)
         if part_centroid is not None and landmark_centroid is not None:
             dist = np.linalg.norm(np.array(part_centroid) - np.array(landmark_centroid))
             if dist > 80:
                 mismatch_parts.append(part)
-        pts = part_pixels.reshape(-1, 1, 2).astype(np.int32)
+                
         color = (0, 0, 255) if part in mismatch_parts else colors[part]
-        cv2.polylines(overlay, [pts], isClosed=False, color=color, thickness=3)
+        for cnt in contours:
+            if cnt.shape[0] > 2:  # 3개 이상 점이 있을 때만 폴리라인
+                cv2.polylines(overlay, [cnt], isClosed=True, color=color, thickness=3)
     return overlay
 
 def update_squat_count(knee_angle):
