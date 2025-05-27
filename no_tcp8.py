@@ -407,6 +407,16 @@ def show_result(unique_st_failed_front_frame_num, unique_ht_failed_front_frame_n
     return st_accuracy, ht_accuracy, kd_accuracy
 
 # ------------------- 모범자세 실루엣 생성  -------------------
+def save_part_contour(points, height, width, part_path):
+    mask = np.zeros((height, width), dtype=np.uint8)
+    for x, y in points:
+        if 0 <= x < width and 0 <= y < height:
+            mask[y, x] = 255
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if contours:
+        largest = max(contours, key=cv2.contourArea)
+        np.save(part_path, largest.squeeze(axis=1))  # (N,2) 형태
+        
 def generate_silhouette(input_dir, output_dir, segment, pose, body_parts, colors):
     os.makedirs(output_dir, exist_ok=True)
     image_files = sorted(os.listdir(input_dir))
@@ -480,6 +490,7 @@ def generate_silhouette(input_dir, output_dir, segment, pose, body_parts, colors
             if not points:
                 continue
             part_path = os.path.join(output_dir, f"{base_name}_{part}.npy")
+            save_part_contour(points, height, width, part_path)
             np.save(part_path, np.array(points))
             
         output_path = os.path.join(output_dir, img_name)
@@ -690,36 +701,23 @@ def draw_silhouette_overlay(frame, silhouette, body_parts, colors, results):
     
     for part, indices in body_parts.items():
         part_pixels = silhouette.get(part, np.array([]))
-        if part_pixels.shape[0] == 0:
+        if part_pixels.shape[0] < 3:
             continue
-        
-        mask = np.zeros((height, width), dtype=np.uint8)
-        for xy in part_pixels.astype(np.int32):
-            x, y = xy
-            if 0 <= x < width and 0 <= y < height:
-                mask[y, x] = 255
-                
-        # 컨투어 추출 (OpenCV의 pts는 이미지 내 좌표)
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         part_centroid = np.mean(part_pixels, axis=0) if len(part_pixels) > 0 else None
         landmark_centroid = np.mean([(landmarks[i].x * width, landmarks[i].y * height) for i in indices], axis=0)
-        if part_centroid is not None and landmark_centroid is not None:
-            dist = np.linalg.norm(np.array(part_centroid) - np.array(landmark_centroid))
-            if dist > 80:
-                mismatch_parts.append(part)
-                
-        color = (0, 0, 255) if part in mismatch_parts else colors[part]
-        for cnt in contours:
-            if cnt.shape[0] > 2:  # 3개 이상 점이 있을 때만 폴리라인
-                cv2.polylines(overlay, [cnt], isClosed=True, color=color, thickness=3)
-    return overlay
+        landmark_centroid = np.mean([(landmarks[i].x * width, landmarks[i].y * height) for i in indices], axis=0)
+        dist = np.linalg.norm(part_centroid - landmark_centroid)
+        color = (0,0,255) if dist > 80 else colors[part]
+        pts = part_pixels.reshape(-1,1,2).astype(np.int32)
+        cv2.polylines(overlay, [pts], isClosed=True, color=color, thickness=3)
+        return overlay
 
 def update_squat_count(knee_angle):
     global squat_count, is_squatting, warned_low_depth, not_deep_squat, direction , squat_started
-    squat_down_threshold = 100  # 내려갔다고 판단하는 각도
+    squat_down_threshold = 110  # 내려갔다고 판단하는 각도
     squat_up_threshold = 160    # 완전히 올라왔다고 판단하는 각도
-    deep_squat_limit = 95       # 충분히 깊게 내려갔는지 판단
+    deep_squat_limit = 99       # 충분히 깊게 내려갔는지 판단
     
     if direction == "up" and knee_angle < squat_down_threshold:
         direction = "down"
