@@ -261,7 +261,7 @@ def control_squat_posture(data_dict):
     print(f"{half_shoulder_distance}")
 
     # 스쿼트 각도 
-    if min_knee_angle > 80:
+    if min_knee_angle > 90:
         print("Not Deep Squat")
         not_deep_squat = True
         
@@ -299,10 +299,10 @@ def control_squat_posture(data_dict):
     return (unique_st_failed_front_frame_num, 
             unique_ht_failed_front_frame_num, 
             unique_kd_failed_front_frame_num, 
-            min_angle_frame
+            min_angle_frame, not_deep_squat
             )
 
-def show_result(unique_st_failed_front_frame_num, unique_ht_failed_front_frame_num, unique_kd_failed_front_frame_num, min_angle_frame):
+def show_result(unique_st_failed_front_frame_num, unique_ht_failed_front_frame_num, unique_kd_failed_front_frame_num, min_angle_frame, not_deep_squat):
     global accuracy_result
     front_frame_files = sorted(os.listdir(front_save_image_dir))  # 정렬하여 순서대로 재생
     right_frame_files = sorted(os.listdir(right_save_image_dir))
@@ -373,6 +373,27 @@ def show_result(unique_st_failed_front_frame_num, unique_ht_failed_front_frame_n
                 cv2.line(front_frame, hip_left, hip_right, (0, 0, 255), 3)  # 골반 빨간선
             if frame_file in unique_kd_failed_front_frame_num:
                 cv2.line(front_frame, knee_left, knee_right, (0, 0, 255), 3)  # 무릎 빨간선
+        
+        if right_results.pose_landmarks:
+            landmarks = right_results.pose_landmarks.landmark
+            right_height, right_width, _ = right_frame.shape
+            
+            hip = (int(landmarks[mp_pose.PoseLandmark.RIGHT_HIP].x * right_width),
+                   int(landmarks[mp_pose.PoseLandmark.RIGHT_HIP].y * right_height))
+            knee = (int(landmarks[mp_pose.PoseLandmark.RIGHT_KNEE].x * right_width),
+                    int(landmarks[mp_pose.PoseLandmark.RIGHT_KNEE].y * right_height))
+            ankle = (int(landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].x * right_width),
+                     int(landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].y * right_height))
+            angle = calculate_angle_knee(
+                (landmarks[mp_pose.PoseLandmark.RIGHT_HIP].x * right_width, landmarks[mp_pose.PoseLandmark.RIGHT_HIP].y * right_height),
+                (landmarks[mp_pose.PoseLandmark.RIGHT_KNEE].x * right_width, landmarks[mp_pose.PoseLandmark.RIGHT_KNEE].y * right_height),
+                (landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].x * right_width, landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].y * right_height)
+            )
+            line_color = (0, 0, 255) if not_deep_squat else (0, 255, 0)
+            cv2.line(right_frame, hip, knee, line_color, 3)
+            cv2.line(right_frame, knee, ankle, line_color, 3)
+            cv2.putText(right_frame, f"Angle: {angle:.1f}", (int(knee[0]), int(knee[1]) - 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
         # 임시 디렉토리에 프레임 저장
         front_temp_path = os.path.join(temp_front_dir, f"{i:04d}.png")
         right_temp_path = os.path.join(temp_right_dir, f"{i:04d}.png")
@@ -711,7 +732,7 @@ def draw_silhouette_overlay(frame, silhouette, body_parts, colors, results):
         color = (0,0,255) if dist > 80 else colors[part]
         pts = part_pixels.reshape(-1,1,2).astype(np.int32)
         cv2.polylines(overlay, [pts], isClosed=True, color=color, thickness=3)
-        return overlay
+    return overlay
 
 def update_squat_count(knee_angle):
     global squat_count, is_squatting, warned_low_depth, not_deep_squat, direction , squat_started
@@ -807,7 +828,7 @@ def process_squat_analysis(front_camera, right_camera):
         analyse_pose()
         data_dict = mk_dictionary()
         st_failed, ht_failed, kd_failed, min_angle_frame = control_squat_posture(data_dict)
-        show_result(st_failed, ht_failed, kd_failed, min_angle_frame)
+        show_result(st_failed, ht_failed, kd_failed, min_angle_frame, not_deep_squat)
         print("✅ [INFO] 분석 작업 완료. squat_check4.html로 이동합니다.")
         pose_analyse_complete = True
     def run_create_silhouettes():
